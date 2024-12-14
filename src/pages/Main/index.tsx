@@ -37,13 +37,16 @@ export default function Main() {
         }
 
         submit()
-    }, [newRepo, repositorios]
-    )
+    }, [newRepo, repositorios])
 
-    const handleInputChange = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
+    const handleDelete = useCallback((repositoryName: string) => {
+        const filterRepositories = repositorios.filter(repository => repository.name !== repositoryName)
+        setRepositorios(filterRepositories)
+    }, [repositorios])
+
+    function handleInputChange(event: React.ChangeEvent<HTMLInputElement>) {
         setNewRepo(event.target.value)
-    }, []
-    );
+    }
 
     return (
         <Container>
@@ -76,7 +79,7 @@ export default function Main() {
                     repositorios.map((repositorio, index) => (
                         <li key={index}>
                             <span>
-                                <DeleteButton>
+                                <DeleteButton onClick={() => handleDelete(repositorio.name)}>
                                     <FaTrash size={14} />
                                 </DeleteButton>
                                 {repositorio.name}
