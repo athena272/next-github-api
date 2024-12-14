@@ -1,5 +1,5 @@
 import { useCallback, useState } from 'react';
-import { FaGithub, FaPlus } from 'react-icons/fa';
+import { FaGithub, FaPlus, FaSpinner } from 'react-icons/fa';
 import { Container, Form, SubmitButton } from "./styles";
 import api from '../../services/api';
 
@@ -61,8 +61,13 @@ export default function Main() {
                     onChange={(event) => handleInputChange(event)}
                 />
 
-                <SubmitButton loading={loading ? 1: 0}>
-                    <FaPlus color="#fff" size={14} />
+                <SubmitButton loading={loading ? 1 : 0}>
+                    {
+                        loading ?
+                            <FaSpinner color="#FFF" size={14} />
+                            :
+                            <FaPlus color="#FFF" size={14} />
+                    }
                 </SubmitButton>
             </Form>
         </Container>
