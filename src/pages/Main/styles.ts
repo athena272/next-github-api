@@ -49,7 +49,7 @@ const animate = keyframes`
 export const SubmitButton = styled.button.attrs<{ loading: number }>((props) => ({
   type: 'submit',
   disabled: !!props.loading, // Convertendo o número para booleano
-})) <{ loading: number }>`
+}))<{ loading: number }>`
   background: #0D2636;
   border: 0;
   border-radius: 4px;
