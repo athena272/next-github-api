@@ -10,13 +10,16 @@ type Repository = {
 export default function Main() {
     const [newRepo, setNewRepo] = useState('');
     const [repositorios, setRepositorios] = useState<Repository[]>([]);
+    const [loading, setLoading] = useState(false)
 
     const handleSubmit = useCallback((event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault()
-    console.log("🚀 ~ Main ~ newRepo:", newRepo)
+        console.log("🚀 ~ Main ~ newRepo:", newRepo)
 
 
         async function submit() {
+            setLoading(true)
+
             try {
                 const response = await api.get(`repos/${newRepo}`)
 
@@ -28,6 +31,9 @@ export default function Main() {
                 setNewRepo('')
             } catch (error) {
                 console.error("Erro ao buscar o repositório:", error)
+            }
+            finally {
+                setLoading(false)
             }
         }
 
@@ -55,7 +61,7 @@ export default function Main() {
                     onChange={(event) => handleInputChange(event)}
                 />
 
-                <SubmitButton>
+                <SubmitButton loading={loading ? 1: 0}>
                     <FaPlus color="#fff" size={14} />
                 </SubmitButton>
             </Form>
