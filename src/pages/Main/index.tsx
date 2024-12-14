@@ -1,6 +1,6 @@
 import { useCallback, useState } from 'react';
-import { FaGithub, FaPlus, FaSpinner } from 'react-icons/fa';
-import { Container, Form, SubmitButton } from "./styles";
+import { FaBars, FaGithub, FaPlus, FaSpinner, FaTrash } from 'react-icons/fa';
+import { Container, DeleteButton, Form, List, SubmitButton } from "./styles";
 import api from '../../services/api';
 
 type Repository = {
@@ -58,6 +58,7 @@ export default function Main() {
                     placeholder="Adicionar repositorios"
                     value={newRepo}
                     onChange={(event) => handleInputChange(event)}
+                    required
                 />
 
                 <SubmitButton loading={loading ? 1 : 0}>
@@ -69,6 +70,24 @@ export default function Main() {
                     }
                 </SubmitButton>
             </Form>
+
+            <List>
+                {
+                    repositorios.map((repositorio, index) => (
+                        <li key={index}>
+                            <span>
+                                <DeleteButton>
+                                    <FaTrash size={14} />
+                                </DeleteButton>
+                                {repositorio.name}
+                            </span>
+                            <a href=''>
+                                <FaBars size={20} />
+                            </a>
+                        </li>
+                    ))
+                }
+            </List>
         </Container>
     )
 }
