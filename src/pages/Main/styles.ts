@@ -46,10 +46,11 @@ const animate = keyframes`
   }
 `;
 
-export const SubmitButton = styled.button.attrs({
-  type: 'submit'
-})`
-  background:#0D2636;
+export const SubmitButton = styled.button.attrs<{ loading: number }>((props) => ({
+  type: 'submit',
+  disabled: !!props.loading, // Convertendo o número para booleano
+})) <{ loading: number }>`
+  background: #0D2636;
   border: 0;
   border-radius: 4px;
   margin-left: 10px;
@@ -58,17 +59,16 @@ export const SubmitButton = styled.button.attrs({
   justify-content: center;
   align-items: center;
 
-  &[disabled]{
+  &[disabled] {
     cursor: not-allowed;
     opacity: 0.5;
   }
 
-  ${props => props.loading &&
+  ${(props) =>
+    props.loading &&
     css`
-      svg{
+      svg {
         animation: ${animate} 2s linear infinite;
       }
-    `
-  }
-
-`
+    `}
+`;
