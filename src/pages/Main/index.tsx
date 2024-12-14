@@ -10,12 +10,11 @@ type Repository = {
 export default function Main() {
     const [newRepo, setNewRepo] = useState('');
     const [repositorios, setRepositorios] = useState<Repository[]>([]);
+    console.log("🚀 ~ Main ~ repositorios:", repositorios)
     const [loading, setLoading] = useState(false)
 
     const handleSubmit = useCallback((event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault()
-        console.log("🚀 ~ Main ~ newRepo:", newRepo)
-
 
         async function submit() {
             setLoading(true)
