@@ -11,35 +11,33 @@ export default function Main() {
     const [newRepo, setNewRepo] = useState('');
     const [repositorios, setRepositorios] = useState<Repository[]>([]);
 
-    const handleSubmit = useCallback(
-        (event: React.FormEvent<HTMLFormElement>) => {
-            event.preventDefault()
+    const handleSubmit = useCallback((event: React.FormEvent<HTMLFormElement>) => {
+        event.preventDefault()
+    console.log("🚀 ~ Main ~ newRepo:", newRepo)
 
-            async function submit() {
-                try {
-                    const response = await api.get(`repos/${newRepo}`)
 
-                    const data: Repository = {
-                        name: response.data.full_name,
-                    };
+        async function submit() {
+            try {
+                const response = await api.get(`repos/${newRepo}`)
 
-                    setRepositorios([...repositorios, data])
-                    setNewRepo('')
-                } catch (error) {
-                    console.error("Erro ao buscar o repositório:", error)
-                }
+                const data: Repository = {
+                    name: response.data.full_name,
+                };
+
+                setRepositorios([...repositorios, data])
+                setNewRepo('')
+            } catch (error) {
+                console.error("Erro ao buscar o repositório:", error)
             }
+        }
 
-            submit()
-        },
-        [newRepo, repositorios]
+        submit()
+    }, [newRepo, repositorios]
     )
 
-    const handleInputChange = useCallback(
-        (event: React.ChangeEvent<HTMLInputElement>) => {
-            setNewRepo(event.target.value)
-        },
-        []
+    const handleInputChange = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
+        setNewRepo(event.target.value)
+    }, []
     );
 
     return (
