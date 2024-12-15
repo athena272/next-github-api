@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { FaBars, FaGithub, FaPlus, FaSpinner, FaTrash } from 'react-icons/fa';
 import { Container, DeleteButton, Form, List, SubmitButton } from "./styles";
 import api from '../../services/api';
@@ -9,24 +9,44 @@ type Repository = {
 
 export default function Main() {
     const [newRepo, setNewRepo] = useState('');
-    const [repositorios, setRepositorios] = useState<Repository[]>([]);
-    console.log("🚀 ~ Main ~ repositorios:", repositorios)
+    const [repositories, setRepositories] = useState<Repository[]>([]);
     const [loading, setLoading] = useState(false)
+    const [alert, setAlert] = useState(null)
+
+    //Search for repositories
+    useEffect(() => {
+        const repositoriesStorage = localStorage.getItem('repositories')
+
+        if (repositoriesStorage) {
+            setRepositories(JSON.parse(repositoriesStorage))
+        }
+    }, [])
+
+    //Save changes
+    useEffect(() => {
+        localStorage.setItem('repositories', JSON.stringify(repositories))
+    }, [repositories])
 
     const handleSubmit = useCallback((event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault()
 
         async function submit() {
             setLoading(true)
-
+            setAlert(null)
             try {
                 const response = await api.get(`repos/${newRepo}`)
+
+                const repositoryAlreadyExists = repositories.find(repository => repository.name === newRepo)
+
+                if (repositoryAlreadyExists) {
+                    throw new Error('Repository already exists')
+                }
 
                 const data: Repository = {
                     name: response.data.full_name,
                 };
 
-                setRepositorios([...repositorios, data])
+                setRepositories([...repositories, data])
                 setNewRepo('')
             } catch (error) {
                 console.error("Erro ao buscar o repositório:", error)
@@ -37,15 +57,16 @@ export default function Main() {
         }
 
         submit()
-    }, [newRepo, repositorios])
+    }, [newRepo, repositories])
 
     const handleDelete = useCallback((repositoryName: string) => {
-        const filterRepositories = repositorios.filter(repository => repository.name !== repositoryName)
-        setRepositorios(filterRepositories)
-    }, [repositorios])
+        const filterRepositories = repositories.filter(repository => repository.name !== repositoryName)
+        setRepositories(filterRepositories)
+    }, [repositories])
 
     function handleInputChange(event: React.ChangeEvent<HTMLInputElement>) {
         setNewRepo(event.target.value)
+        setAlert(null)
     }
 
     return (
@@ -55,7 +76,7 @@ export default function Main() {
                 Meus repositorios
             </h1>
 
-            <Form onSubmit={(event) => handleSubmit(event)}>
+            <Form onSubmit={(event) => handleSubmit(event)} error={alert}>
                 <input
                     type="text"
                     placeholder="Adicionar repositorios"
@@ -76,7 +97,7 @@ export default function Main() {
 
             <List>
                 {
-                    repositorios.map((repositorio, index) => (
+                    repositories.map((repositorio, index) => (
                         <li key={index}>
                             <span>
                                 <DeleteButton onClick={() => handleDelete(repositorio.name)}>
