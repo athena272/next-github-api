@@ -1,5 +1,9 @@
 import styled, { css, keyframes } from 'styled-components';
 
+interface FormProps {
+  error?: boolean | null;
+}
+
 export const Container = styled.div`
   max-width: 700px;
   background: #FFF;
@@ -21,14 +25,14 @@ export const Container = styled.div`
   }
 `
 
-export const Form = styled.form`
+export const Form = styled.form<FormProps>`
   margin-top: 30px;
   display:flex;
   flex-direction: row;
 
   input{
     flex:1;
-    border: 1px solid #DDD;
+    border: 1px solid ${props => (props.error ? '#FF0000' : '#eee')};
     padding: 10px 15px;
     border-radius: 4px;
     font-size: 17px;
