@@ -76,7 +76,7 @@ export default function Main() {
                 Meus repositorios
             </h1>
 
-            <Form onSubmit={(event) => handleSubmit(event)} error={alert}>
+            <Form onSubmit={(event) => handleSubmit(event)} $error={!!alert}>
                 <input
                     type="text"
                     placeholder="Adicionar repositorios"
