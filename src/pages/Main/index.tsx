@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { FaBars, FaGithub, FaPlus, FaSpinner, FaTrash } from 'react-icons/fa';
 import { Container, DeleteButton, Form, List, SubmitButton } from "./styles";
 import api from '../../services/api';
+import { Link } from 'react-router-dom';
 
 type Repository = {
     name: string;
@@ -113,17 +114,17 @@ export default function Main() {
 
             <List>
                 {
-                    repositories.map((repositorio, index) => (
+                    repositories.map((repository, index) => (
                         <li key={index}>
                             <span>
-                                <DeleteButton onClick={() => handleDelete(repositorio.name)}>
+                                <DeleteButton onClick={() => handleDelete(repository.name)}>
                                     <FaTrash size={14} />
                                 </DeleteButton>
-                                {repositorio.name}
+                                {repository.name}
                             </span>
-                            <a href=''>
+                            <Link to={`/repository/${encodeURIComponent(repository.name)}`}>
                                 <FaBars size={20} />
-                            </a>
+                            </Link>
                         </li>
                     ))
                 }
