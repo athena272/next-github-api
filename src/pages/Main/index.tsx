@@ -11,21 +11,36 @@ export default function Main() {
     const [newRepo, setNewRepo] = useState('');
     const [repositories, setRepositories] = useState<Repository[]>([]);
     const [loading, setLoading] = useState(false)
-    const [alert, setAlert] = useState(null)
+    const [alert, setAlert] = useState<boolean | null>(null)
 
     //Search for repositories
     useEffect(() => {
-        const repositoriesStorage = localStorage.getItem('repositories')
+        const repositoriesStorage = localStorage.getItem('repositories');
 
-        if (repositoriesStorage) {
-            setRepositories(JSON.parse(repositoriesStorage))
+        try {
+            if (repositoriesStorage) {
+                const parsedRepositories = JSON.parse(repositoriesStorage);
+
+                if (Array.isArray(parsedRepositories)) {
+                    setRepositories(parsedRepositories);
+                } else {
+                    localStorage.removeItem('repositories'); // Remove valores inválidos
+                }
+            }
+        } catch (error) {
+            console.error("Erro ao recuperar repositórios do localStorage:", error);
+            localStorage.removeItem('repositories');
         }
-    }, [])
+    }, []);
+
 
     //Save changes
     useEffect(() => {
-        localStorage.setItem('repositories', JSON.stringify(repositories))
-    }, [repositories])
+        if (repositories.length > 0) { // Só salva se houver algo no estado
+            localStorage.setItem('repositories', JSON.stringify(repositories));
+        }
+    }, [repositories]);
+    
 
     const handleSubmit = useCallback((event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault()
@@ -49,6 +64,7 @@ export default function Main() {
                 setRepositories([...repositories, data])
                 setNewRepo('')
             } catch (error) {
+                setAlert(true)
                 console.error("Erro ao buscar o repositório:", error)
             }
             finally {
