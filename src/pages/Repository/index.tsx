@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react"
 import { RouteComponentProps } from "react-router-dom";
-import { Container } from "./styles"
+import { Container, Owner, Loading, BackButton } from "./styles"
 import api from "../../services/api"
+import { FaArrowLeft } from "react-icons/fa";
 
 // Definindo a estrutura dos parâmetros da rota
 interface MatchParams {
@@ -10,9 +11,13 @@ interface MatchParams {
 
 // Definindo a estrutura do repositório e das issues
 interface RepositoryData {
-    full_name: string;
+    name: string;
     description: string;
     html_url: string;
+    owner: {
+        avatar_url: string,
+        login: string
+    }
 }
 
 interface IssueData {
@@ -59,9 +64,30 @@ export default function Repository({ match }: RepositoryProps) {
         load();
     }, [match.params.repository])
 
-    return (
-        <Container>
 
-        </Container>
+    return (
+        loading ?
+            (
+                <Loading>
+                    <h1>Loading...</h1>
+                </Loading>
+            )
+            :
+            (
+                <Container>
+                    <BackButton to={'/'}>
+                        <FaArrowLeft color="#000" size={30} />
+                    </BackButton>
+                    <Owner>
+                        <img
+                            src={repository?.owner.avatar_url}
+                            alt={repository?.owner.login}
+                        />
+                        <h1>{repository?.name}</h1>
+                        <p>{repository?.description}</p>
+                    </Owner>
+                </Container>
+            )
     )
+
 }
