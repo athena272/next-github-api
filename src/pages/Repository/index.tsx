@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react"
 import { RouteComponentProps } from "react-router-dom";
-import { Container, Owner, Loading, BackButton, IssuesList } from "./styles"
+import { Container, Owner, Loading, BackButton, IssuesList, PageActions } from "./styles"
 import api from "../../services/api"
 import { FaArrowLeft } from "react-icons/fa";
 
@@ -13,6 +13,8 @@ interface Label {
     id: number;
     name: string;
 }
+
+type PageActions = "back" | "next"
 
 // Definindo a estrutura do repositório e das issues
 interface RepositoryData {
@@ -43,6 +45,7 @@ export default function Repository({ match }: RepositoryProps) {
     const [repository, setRepository] = useState<RepositoryData | null>(null)
     const [issues, setIssues] = useState<IssueData[]>([])
     const [loading, setLoading] = useState(true)
+    const [page, setPage] = useState(1)
 
     useEffect(() => {
         async function load() {
@@ -68,9 +71,39 @@ export default function Repository({ match }: RepositoryProps) {
             }
         }
 
+        setLoading(true)
         load();
     }, [match.params.repository])
 
+    useEffect(() => {
+        async function loadIssues() {
+            const repoName = decodeURIComponent(match.params.repository);
+
+            try {
+                const response = await api.get<IssueData[]>(`/repos/${repoName}/issues`, {
+                    params: {
+                        state: 'open',
+                        per_page: 5,
+                        page,
+                    },
+                })
+
+                setIssues(response.data)
+            } catch (error) {
+                console.error("Erro ao carregar os dados:", error);
+            } finally {
+                setLoading(false);
+            }
+        }
+
+        setLoading(true)
+        loadIssues()
+    }, [match.params.repository, page])
+
+
+    function handlePage(action: PageActions) {
+        setPage(action === 'back' && page > 1 ? page - 1 : page + 1)
+    }
 
     return (
         loading ?
@@ -114,6 +147,22 @@ export default function Repository({ match }: RepositoryProps) {
                             ))
                         }
                     </IssuesList>
+                    <PageActions>
+                        <button
+                            type="button"
+                            onClick={() => handlePage('back')}
+                            disabled={page < 2}
+                        >
+                            Voltar
+                        </button>
+
+                        <button
+                            type="button"
+                            onClick={() => handlePage('next')}
+                        >
+                            Próxima
+                        </button>
+                    </PageActions>
                 </Container>
             )
     )
