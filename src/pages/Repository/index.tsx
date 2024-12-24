@@ -101,7 +101,7 @@ export default function Repository({ match }: RepositoryProps) {
 
                                     <div>
                                         <strong>
-                                            <a href={issue.html_url}>{issue.title}</a>
+                                            <a href={issue.html_url} target="_blank">{issue.title}</a>
                                             {
                                                 issue.labels.map(label => (
                                                     <span key={String(label.id)}>{label.name}</span>
