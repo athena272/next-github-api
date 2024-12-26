@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react"
 import { RouteComponentProps } from "react-router-dom";
-import { Container, Owner, Loading, BackButton, IssuesList, PageActions } from "./styles"
+import { Container, Owner, Loading, BackButton, IssuesList, PageActions, FilterList } from "./styles"
 import api from "../../services/api"
 import { FaArrowLeft } from "react-icons/fa";
 
@@ -46,6 +46,12 @@ export default function Repository({ match }: RepositoryProps) {
     const [issues, setIssues] = useState<IssueData[]>([])
     const [loading, setLoading] = useState(true)
     const [page, setPage] = useState(1)
+    const [filters, setFilters] = useState([
+        { state: 'all', label: 'Todas', active: true },
+        { state: 'open', label: 'Abertas', active: false },
+        { state: 'closed', label: 'Fechadas', active: false },
+    ]);
+    const [filterIndex, setFilterIndex] = useState(0);
 
     useEffect(() => {
         async function load() {
@@ -56,7 +62,7 @@ export default function Repository({ match }: RepositoryProps) {
                     api.get<RepositoryData>(`/repos/${repoName}`),
                     api.get<IssueData[]>(`/repos/${repoName}/issues`, {
                         params: {
-                            state: 'open',
+                            state: filters.find(filter => filter.active)?.state,
                             per_page: 5,
                         },
                     }),
@@ -73,7 +79,7 @@ export default function Repository({ match }: RepositoryProps) {
 
         setLoading(true)
         load();
-    }, [match.params.repository])
+    }, [match.params.repository, filters])
 
     useEffect(() => {
         async function loadIssues() {
@@ -82,7 +88,7 @@ export default function Repository({ match }: RepositoryProps) {
             try {
                 const response = await api.get<IssueData[]>(`/repos/${repoName}/issues`, {
                     params: {
-                        state: 'open',
+                        state: filters[filterIndex].state,
                         per_page: 5,
                         page,
                     },
@@ -98,10 +104,14 @@ export default function Repository({ match }: RepositoryProps) {
 
         setLoading(true)
         loadIssues()
-    }, [match.params.repository, page])
+    }, [match.params.repository, page, filterIndex, filters])
 
     function handlePage(action: PageActions) {
         setPage(action === 'back' && page > 1 ? page - 1 : page + 1)
+    }
+
+    function handleFilter(index: number) {
+        setFilterIndex(index)
     }
 
     return (
@@ -125,6 +135,20 @@ export default function Repository({ match }: RepositoryProps) {
                         <h1>{repository?.name}</h1>
                         <p>{repository?.description}</p>
                     </Owner>
+
+                    <FilterList active={filterIndex}>
+                        {
+                            filters.map((filter, index) => (
+                                <button
+                                    key={index}
+                                    type="button"
+                                    onClick={() => handleFilter(index)}
+                                >
+                                    {filter.label}
+                                </button>
+                            ))
+                        }
+                    </FilterList>
 
                     <IssuesList>
                         {
