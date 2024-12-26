@@ -100,7 +100,6 @@ export default function Repository({ match }: RepositoryProps) {
         loadIssues()
     }, [match.params.repository, page])
 
-
     function handlePage(action: PageActions) {
         setPage(action === 'back' && page > 1 ? page - 1 : page + 1)
     }
