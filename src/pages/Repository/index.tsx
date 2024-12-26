@@ -121,6 +121,7 @@ export default function Repository({ match }: RepositoryProps) {
                         <img
                             src={repository?.owner.avatar_url}
                             alt={repository?.owner.login}
+                            loading="lazy"
                         />
                         <h1>{repository?.name}</h1>
                         <p>{repository?.description}</p>
@@ -130,7 +131,7 @@ export default function Repository({ match }: RepositoryProps) {
                         {
                             issues.map(issue => (
                                 <li key={String(issue.id)}>
-                                    <img src={issue.user.avatar_url} alt={issue.user.login} />
+                                    <img src={issue.user.avatar_url} alt={issue.user.login} loading="lazy" />
 
                                     <div>
                                         <strong>
